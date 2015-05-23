@@ -17,5 +17,5 @@ are tied to a geographic location - potentially limiting the available choices b
 telephone exchanges serve a local area.
 
 North American Standard Keypad 
-2 = A B C	4 = G H I	6 = M N O	8 = T U V
-3 = D E F	5 = J K L	7 = P Q R S	9 = W X Y Z
+2 = A B C	 4 = G H I	6 = M N O	 8 = T U V
+3 = D E F	 5 = J K L	7 = P Q R S	 9 = W X Y Z
