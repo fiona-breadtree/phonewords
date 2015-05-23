@@ -28,11 +28,16 @@ telephone exchanges serve a local area.
 * you can change log4j.property under config/
 * run one of the following command:
 
-> 
-(a) ./appstart.sh 
-(b) ./appstart.sh -p ${phoneFilename}
-for example:./appstart.sh -p  config/phones
-(c) ./appstart.sh -p ${phoneFilename} -d ${dictionary}
-for example: ./appstart.sh -p config/phones -d config/testwords
-(d) ./appstart.sh -d ${dictionary}
-for example ./appstart.sh -d config/testwords
+    (a) ./appstart.sh  
+    
+    (b) ./appstart.sh -p ${phoneFilename}
+    
+            for example:./appstart.sh -p  config/phones
+    
+    (c) ./appstart.sh -p ${phoneFilename} -d ${dictionary}
+    
+            for example: ./appstart.sh -p config/phones -d config/testwords
+    
+    (d) ./appstart.sh -d ${dictionary}
+    
+            for example ./appstart.sh -d config/testwords
