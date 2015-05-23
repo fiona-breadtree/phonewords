@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Phone-To-Word" default="prod">
+	<description>
+		Phone2Word build file
+    </description>
+
+	<!-- project-specific data -->
+	<property name="proj.name" value="phone2word" />
+	<property name="proj.title" value="Phone-To-Word" />
+	<property name="proj.major.version" value="1.2" />
+	<property name="proj.minor.version" value="1.1" />
+
+	<property name="jar.name" value="${proj.name}.jar" />
+	
+	<property name="jdk.ver" value="1.7" />
+
+	<!-- project directory / path information -->
+	<property name="proj.path" value="com/fiona/phone2word" />
+	<property name="proj.package" value="com.fiona.phone2word" />
+
+	<!-- src directories -->
+	<property name="dir.src" value="src" />
+
+	<!-- test directories -->
+	<property name="dir.test" value="test" />
+
+	<!-- lib directories -->
+	<property name="dir.lib.deploy" value="lib/deploy" />
+	<property name="dir.lib.test" value="lib/test" />
+
+	<!-- build directories -->
+	<property name="dir.build" value="build" />
+	<property name="dir.build.src" value="${dir.build}/src" />
+	<property name="dir.build.test" value="${dir.build}/test" />
+	<property name="dir.build.jar" value="${dir.build}/jar" />
+
+	<!-- config directories -->
+	<property name="dir.config" value="config" />
+
+	<!-- prod env -->
+	<property name="prod" value="prod" />
+	<property name="prod.jar" value="${prod}/jar" />
+	<property name="prod.3rdparty" value="${prod}/3rdparty" />
+	<property name="prod.config" value="${prod}/config" />
+	
+	<!-- logging stuff -->
+	<property name="log4.file" value="log4j.properties" />
+	<property name="log4.token" value="@LOGLEVEL@" />
+
+	<!-- misc -->
+	<property name="dir.report" value="${dir.build}/report" />
+	<property name="emma.coverage" value="false" />
+	
+    <path id="compile.classpath">
+        <fileset dir="${dir.lib.deploy}">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+	<path id="test.classpath">
+		<pathelement location="${dir.build.src}" />
+		<pathelement location="${dir.build.test}" />
+		<fileset dir="${dir.lib.deploy}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${dir.lib.test}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<path id="emma.classpath">
+		<pathelement location="${dir.lib.test}/emma.jar" />
+		<pathelement location="${dir.lib.test}/emma_ant.jar" />
+	</path>
+
+	<property name="all.libs" refid="test.classpath" />
+	<property name="compiled.libs" refid="compile.classpath" />
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${dir.lib.deploy}/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="-init" description="Create folders">
+	
+		<mkdir dir="${dir.build.src}" />
+		<mkdir dir="${dir.build.test}" />
+
+		<mkdir dir="${dir.report}" />
+
+		<tstamp>
+			<format property="current.time" pattern="yyyyddMM" />
+		</tstamp>
+	</target>
+
+	<target name="-clean.src" description="clean generated and compiled files">
+		<delete dir="${dir.build}" />
+	</target>
+
+	<target name="clean" depends="-clean.src" description="Clean everything">
+		<delete dir="${dir.report}" />
+		<delete dir="${prod}" />
+	</target>
+
+
+
+	<target name="compile.src" depends="-init">
+		<property name="debug" value="on" />
+
+		<javac source="${jdk.ver}" target="${jdk.ver}" description="compile the source files" 
+			srcdir="${dir.src}" destdir="${dir.build.src}" 
+				fork="yes" debug="${debug}" debuglevel="lines,vars,source" 
+					deprecation="on" includeantruntime="false">
+		    <compilerarg line="-encoding utf-8"/>
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+
+	<target name="-compile.test" depends="compile.src">
+		<javac source="${jdk.ver}" target="${jdk.ver}" srcdir="${dir.test}" destdir="${dir.build.test}" fork="yes" debug="on" deprecation="on" includeantruntime="false">
+			<compilerarg line="-encoding utf-8"/>
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
+	<target name="test" depends="-compile.test" description="Run JUnit tests">
+		<!-- if not emma test, delete instrumentation folder -->
+		<if>
+			<equals arg1="${emma.coverage}" arg2="false" />
+			<then>
+				<delete dir="${dir.build.instrumented}" />
+				<echo message="Running tests with clean code..." />
+			</then>
+			<else>
+				<echo message="Running tests with instrumented code..." />
+			</else>
+		</if>
+
+		<junit fork="yes" forkmode="perTest" haltonfailure="no">
+
+			<test name="${proj.package}.TestSuite" todir="${dir.report}" filtertrace="on" />
+
+			<formatter type="xml" usefile="true" />
+			<classpath refid="test.classpath" />
+
+			<!-- these args are used by emma -->
+			<jvmarg value="-Demma.coverage.out.file=${dir.report}/metadata.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=true" />
+			<jvmarg value="-XX:-UseSplitVerifier" />
+		</junit>
+	</target>
+
+	<target name="emma" depends="-compile.test" description="Measure code coverage of the JUnit tests">
+		<taskdef resource="emma_ant.properties" classpathref="emma.classpath" />
+
+		<mkdir dir="${dir.build.instrumented}" />
+
+		<!-- instrument the code -->
+		<emma enabled="true">
+			<instr instrpath="${dir.build.src}" destdir="${dir.build.instrumented}" metadatafile="${dir.report}/metadata.emma" merge="true">
+			</instr>
+		</emma>
+
+		<!-- run the tests -->
+		<antcall target="test">
+			<param name="emma.coverage" value="true" />
+		</antcall>
+
+		<!-- create the report -->
+		<emma enabled="true">
+			<report sourcepath="${dir.src}">
+				<fileset dir="${dir.report}">
+					<include name="*.emma" />
+				</fileset>
+				<xml outfile="${dir.report}/coverage.xml" />
+				<html outfile="${dir.report}/coverage.html" />
+			</report>
+		</emma>
+
+	</target>
+
+
+	<target name="jar" depends="-clean.src, compile.src, test" description="builds a jar file for the application">
+		<mkdir dir="${dir.build.jar}" />
+			<jar destfile="${dir.build.jar}/${jar.name}">
+				<fileset dir="${dir.build.src}">
+					<include name="com/fiona/phone2word/**/*.class" />
+				</fileset>
+			</jar>
+	</target>
+	
+	<target name="prod" depends="jar" description="Move build data to prod">
+		<mkdir dir="${prod.jar}" />
+		<copy todir="${prod.jar}">
+			<fileset dir="${dir.build.jar}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<!-- Setup config -->
+		<mkdir dir="${prod.config}" />
+		<copy todir="${prod.config}">
+			<fileset dir="${dir.config}">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+
+		<!-- 3rdparty Jars -->
+		<mkdir dir="${prod.3rdparty}" />
+
+		<copy todir="${prod.3rdparty}">		
+			<fileset dir="${dir.lib.deploy}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		<copy file="appstart.sh" todir="${prod}" />
+		<chmod dir="${prod}" perm="755" includes="**/*.sh" />
+	</target>
+</project>
