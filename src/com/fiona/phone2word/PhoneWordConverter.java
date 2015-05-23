@@ -14,7 +14,7 @@ public class PhoneWordConverter {
 
 	public final static String WORD_BOUNDARY = "-";
 	public final static String NO_BOUNDARY = "";
-	public final static int MAX_LENGTH = 50;
+	public final static int MAX_LENGTH = 20;
 
 	private StringProcesser strProcessor = null;
 	private StringJointer jointer = null;
