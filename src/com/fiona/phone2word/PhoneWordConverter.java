@@ -14,10 +14,12 @@ public class PhoneWordConverter {
 
 	public final static String WORD_BOUNDARY = "-";
 	public final static String NO_BOUNDARY = "";
+	public final static int MAX_LENGTH = 50;
 
 	private StringProcesser strProcessor = null;
 	private StringJointer jointer = null;
 	private PhoneDictionary dictionary = null;
+	private int maxLength = 15;
 
 	public PhoneWordConverter(String dictionaryFileName) {
 		super();
@@ -27,6 +29,10 @@ public class PhoneWordConverter {
 	}
 
 	public List<String> convert(String phoneNumber) {
+		if (phoneNumber.length() > maxLength) {
+			log.warn("Cannot support the phone number exceed max length " + maxLength);
+			return null;
+		}
 		log.debug("Begin to covert phone number : " + phoneNumber);
 		//remove all punctuation and whitespace from phone number
 		String processedPhoneNumber = strProcessor.processNumber(phoneNumber);
@@ -65,4 +71,12 @@ public class PhoneWordConverter {
 	public void loadDictionary(String dictionaryFileName) {
 		this.dictionary.loadDictionary(dictionaryFileName);
 	}
+
+	public void setPhoneNumberMaxLength(int maxLength) {
+		if (maxLength > MAX_LENGTH) {
+			return;
+		}
+		this.maxLength = maxLength;
+	}
+	
 }

@@ -48,6 +48,14 @@ public class Phone2Word implements LineReaderCallBack {
 						System.out.println("Enter a file name for dictionary:");
 						String dictionaryName = in.nextLine().trim();
 						excuteDictionaryLoad(dictionaryName);
+					} else if (command.equals("3")) {
+						System.out.println("Enter the max length for phone numbers:");
+						String maxLengthStr = in.nextLine().trim();
+						if (maxLengthStr.matches("[0-9]*")) {
+							converter.setPhoneNumberMaxLength(Integer.parseInt(maxLengthStr));
+						} else {
+							System.out.println("Not a valid number, please retry");
+						}
 					} else {
 						System.out.println("Cannot parse the input, please retry.");
 					}
@@ -117,18 +125,21 @@ public class Phone2Word implements LineReaderCallBack {
 		System.out.println("Phone2Word MenuList:");
 		System.out.println("----1: Load phone file");
 		System.out.println("----2: Load dictionary file");
+		System.out.println("----3: Set max length of phone number");
 		System.out.println("----0: Quit");
 		System.out.print("Your input here: ");
 	}
 
 	@Override
 	public void processLine(String strLine) {
-		List<String> foundWords = converter.convert(strLine);
 		String processedStr = strProcessor.processNumber(strLine);
 		if (processedStr == null || processedStr.isEmpty()) {
 			return; //do nothing
 		}
-		if (foundWords.size() == 0) {
+		
+		List<String> foundWords = converter.convert(strLine);
+
+		if (foundWords == null || foundWords.size() == 0) {
 			System.out.println("No Match for : " + strProcessor.processNumber(strLine));
 		} else {
 			System.out.println("Following words are found for  " + strProcessor.processNumber(strLine));
