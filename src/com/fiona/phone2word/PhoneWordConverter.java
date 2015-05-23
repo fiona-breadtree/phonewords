@@ -79,4 +79,7 @@ public class PhoneWordConverter {
 		this.maxLength = maxLength;
 	}
 	
+	public int getWordMaxLength() {
+		return dictionary.getMaxLengthOfWord();
+	}
 }

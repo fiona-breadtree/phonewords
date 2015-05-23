@@ -56,6 +56,8 @@ public class Phone2Word implements LineReaderCallBack {
 						} else {
 							System.out.println("Not a valid number, please retry");
 						}
+					} else if (command.equals("4")) {
+						System.out.println("The max length of words in Dictionary is : " + converter.getWordMaxLength());
 					} else {
 						System.out.println("Cannot parse the input, please retry.");
 					}
@@ -126,6 +128,7 @@ public class Phone2Word implements LineReaderCallBack {
 		System.out.println("----1: Load phone file");
 		System.out.println("----2: Load dictionary file");
 		System.out.println("----3: Set max length of phone number");
+		System.out.println("----4: Get max length of word in Dictionary");
 		System.out.println("----0: Quit");
 		System.out.print("Your input here: ");
 	}

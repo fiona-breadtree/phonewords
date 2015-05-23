@@ -27,6 +27,9 @@ public class PhoneDictionary implements LineReaderCallBack {
 	
 	private StringProcesser preProcessor = null;
 	
+	private int maxLengthOfWord = 0;
+	private int maxLengthOfWordWhenLoading = 0;
+	
 	static {
 		charNumberMap = new HashMap<Character, String>();
 		charNumberMap.put(new Character('A'), "2");
@@ -103,10 +106,12 @@ public class PhoneDictionary implements LineReaderCallBack {
 		}
 		
 		loadedWords = new HashMap<String, SortedSet<String>>();
+		maxLengthOfWordWhenLoading = 0;
 		
 		FileReader fileReader = new FileReader(this);
 		fileReader.readFileByLine(fileName);
 		
+		maxLengthOfWord = maxLengthOfWordWhenLoading;
 		return loadedWords;
 	}
 
@@ -128,6 +133,9 @@ public class PhoneDictionary implements LineReaderCallBack {
 		}
 
 		String numberStr = sb.toString();
+		if (maxLengthOfWordWhenLoading < numberStr.length()) {
+			maxLengthOfWordWhenLoading = numberStr.length();
+		}
 		if (loadedWords.containsKey(numberStr)) {
 			loadedWords.get(numberStr).add(word);
 		} else {
@@ -191,5 +199,12 @@ public class PhoneDictionary implements LineReaderCallBack {
 		processWord("XMAS", this.numberWordsMap);
 		processWord("YOU", this.numberWordsMap);
 		processWord("ZOO", this.numberWordsMap);
+		
+		maxLengthOfWord = maxLengthOfWordWhenLoading;
 	}
+
+	public int getMaxLengthOfWord() {
+		return maxLengthOfWord;
+	}
+	
 }

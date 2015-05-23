@@ -42,6 +42,40 @@ public class SubStrCombinationFinder {
 	    
 		return combinations;
 	}
+
 	
+	public List<List<String>> findCombinationsByPace(String input, int pace) {
+		
+		List<List<String>> combinations = new ArrayList<List<String>>();
+		if (input.length() <= pace || pace <= 0) {
+			combinations.add(new ArrayList<String>(Arrays.asList(input)));
+			return combinations;
+		}
+		
+		for (int i = 0; i < pace; i++) {
+			
+			if (i + pace - 1 > input.length()) {
+				continue;
+			}
+			
+			List<String> newCombination = new ArrayList<String>();
+			
+			int beginIndex = i;
+			if (beginIndex != 0) {
+				newCombination.add(input.substring(0, beginIndex));
+			}	
+			while (beginIndex < (input.length())) {
+				int endPosition = beginIndex + pace;
+				if (endPosition > input.length()) {
+					endPosition = input.length();
+				}
+				newCombination.add(input.substring(beginIndex, endPosition));
+				beginIndex += pace;
+			}
+			combinations.add(newCombination);
+		}
+			    
+		return combinations;
+	}
 	
 }
