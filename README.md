@@ -43,3 +43,17 @@ telephone exchanges serve a local area.
     (d) ./appstart.sh -d ${dictionary}
     
             for example ./appstart.sh -d config/testwords
+
+### The processes
+1. Load a Dictionary by a file name, if the file name is null or there is and exceptions when loading, use the default Dictionary “config/words”(this file is the same one of “/usr/share/dict/words” in Linux or MACBOOK). If default Dictionary is missing, use the embedded Dictionary. For every line in dictionary file, remove punctuations and white spaces. For those with illegal format, just ignore. 
+2. Pre-process the dictionary to a number words map. For example, with a dictionary with three words “BALL, CALL, ME”, the result is { “2255” :[“BALL”, “CALL”], “63”:[“ME”]}
+3. When loading a phone number file, for every phone:
+  
+  (1) Pre-process phone number to be a correct format. 
+
+  (2) find all sub-strings combinations for the given phone number, for example, for “225563”, all of its cub-strings combinations are :
+>[[2, 2, 5, 5, 6, 3], [2, 2, 5, 5, 63], [2, 2, 5, 56, 3], [2, 2, 5, 563], [2, 2, 55, 6, 3], [2, 2, 55, 63], [2, 2, 556, 3], [2, 2, 5563], [2, 25, 5, 6, 3], [2, 25, 5, 63], [2, 25, 56, 3], [2, 25, 563], [2, 255, 6, 3], [2, 255, 63], [2, 2556, 3], [22, 5, 5, 6, 3], [22, 5, 5, 63], [22, 5, 56, 3], [22, 5, 563], [22, 55, 6, 3], [22, 55, 63], [22, 556, 3], [22, 5563], [225, 5, 6, 3], [225, 5, 63], [225, 56, 3], [225, 563], [2255, 6, 3], [2255, 63], [22556, 3], [225563]]
+
+  (3) Look up from PhoneDictionary to find all matched words and then remove the results which have two consecutive numbers. 
+
+  (4) Display all found words  with defined format for the phone number.
