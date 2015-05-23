@@ -1,5 +1,5 @@
 # phonewords
-Following instructions from WIKI: http://en.wikipedia.org/wiki/Phoneword
+Following instructions from [Phoneword WIKI](http://en.wikipedia.org/wiki/Phoneword)
 
 Phonewords are mnemonic phrases represented as alphanumeric equivalents of a telephone number.
 In many countries, there exist letters corresponding to each digit on a telephone keypad. The 
