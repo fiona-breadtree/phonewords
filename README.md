@@ -17,21 +17,36 @@ are tied to a geographic location - potentially limiting the available choices b
 telephone exchanges serve a local area.
 
 North American Standard Keypad 
+
 2 = A B C	 4 = G H I	6 = M N O	 8 = T U V
+
 3 = D E F	 5 = J K L	7 = P Q R S	 9 = W X Y Z
 
 How to compile and run?
+
 (1) Make sure the environment settings for JAVA and ANT.
+ 
  Java version should be 1.7, and "1.7.0_51" or above is recommended.
  Ant Version should be 1.9, and "1.9.4" is recommended.
+ 
 (2) run : ant prod
+
 (3) run command : cd prod
+
 (4) you can change log4j.property under config/
+
 (5) run one of the following command:
+
   (a) ./appstart.sh 
+  
   (b) ./appstart.sh -p ${phoneFilename}
+  
       for example:./appstart.sh -p  config/phones
+      
   (c) ./appstart.sh -p ${phoneFilename} -d ${dictionary}
+  
       for example: ./appstart.sh -p config/phones -d config/testwords
+      
   (d) ./appstart.sh -d ${dictionary}
+  
       for example ./appstart.sh -d config/testwords
