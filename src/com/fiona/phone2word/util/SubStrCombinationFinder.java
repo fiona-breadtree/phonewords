@@ -5,7 +5,16 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SubStrCombinationFinder {
+	
+	private FoundCombinationCallback callback = null;
 	private final int BEGIN_POS = 0;
+
+	
+	public SubStrCombinationFinder(FoundCombinationCallback callback) {
+		super();
+		this.callback = callback;
+	}
+
 
 	/**
 	 * Find all combinations of substring for an input string.
@@ -44,38 +53,96 @@ public class SubStrCombinationFinder {
 	}
 
 	
-	public List<List<String>> findCombinationsByPace(String input, int pace) {
+	public void findCombinationsOneByOne(String input) {
+		List<String> subStrings = splitString(input, 10);
 		
-		List<List<String>> combinations = new ArrayList<List<String>>();
-		if (input.length() <= pace || pace <= 0) {
-			combinations.add(new ArrayList<String>(Arrays.asList(input)));
-			return combinations;
+		List<List<List<String>>> allSubCombinations = new ArrayList<List<List<String>>>();
+		for (String subStr : subStrings) {
+			List<List<String>> subCombinations = this.findAllCombinationNoRecursion(subStr);
+			allSubCombinations.add(subCombinations);
 		}
+
+		int subStrNumber = subStrings.size();
+		int[] cursors = new int[subStrNumber];
+		for (int i = 0; i < subStrNumber; i++) {
+			cursors[i] = 0;
+		}
+		int lastIndex = (subStrNumber - 1);
 		
-		for (int i = 0; i < pace; i++) {
-			
-			if (i + pace - 1 > input.length()) {
-				continue;
+		boolean finished = false;
+		while (!finished) {
+			List<List<String>> strings = new ArrayList<List<String>>();
+			for (int index = 0; index < allSubCombinations.size(); index++) {
+				strings.add(allSubCombinations.get(index).get(cursors[index]));
 			}
 			
-			List<String> newCombination = new ArrayList<String>();
-			
-			int beginIndex = i;
-			if (beginIndex != 0) {
-				newCombination.add(input.substring(0, beginIndex));
-			}	
-			while (beginIndex < (input.length())) {
-				int endPosition = beginIndex + pace;
-				if (endPosition > input.length()) {
-					endPosition = input.length();
+			for (int j = lastIndex; j >= 0; j--) {
+				cursors[j]++;
+				if (cursors[j] >= allSubCombinations.get(j).size()) {
+					if (j == 0) {
+						finished = true;
+						break;
+					}
+					cursors[j] = 0;
+				} else {
+					break;
 				}
-				newCombination.add(input.substring(beginIndex, endPosition));
-				beginIndex += pace;
 			}
-			combinations.add(newCombination);
+
+			List<List<String>> foundSubCombination = combineSubStrings(strings);
+			for (List<String> foundResult : foundSubCombination) {
+				if (callback != null) {
+					callback.handle(foundResult);
+				}
+ 			}
 		}
-			    
-		return combinations;
+	}
+
+
+	private List<String> splitString(String input, int pace) {
+		List<String> subStrings = new ArrayList<String>();
+
+		if (input.length() > pace) {
+			for (int i = 0; i < input.length(); i += pace) {
+				int endPos = ((i+ pace) > input.length() ? input.length() : i + pace);
+				subStrings.add(input.substring(i, endPos));
+			}
+		} else {
+			subStrings.add(input);
+		}
+		return subStrings;
 	}
 	
+	private List<List<String>> combineSubStrings(List<List<String>> strings) {
+		if (strings == null || strings.size() == 0 || strings.size() == 1) {
+			return strings;
+		}
+
+		List<List<String>> newCombinations = new ArrayList<List<String>>(Arrays.asList(strings.get(0)));
+		for (int i = 1; i < strings.size(); i++) {
+			List<List<String>> tmpCombinations = new ArrayList<List<String>>();
+
+			for (List<String> newCombination : newCombinations) {
+				tmpCombinations.add(combineTwo(newCombination, strings.get(i), true));
+				tmpCombinations.add(combineTwo(newCombination, strings.get(i), false));
+			}
+			newCombinations = tmpCombinations;
+		}
+		return newCombinations;
+	}
+	
+	private List<String> combineTwo(List<String> stringOne, List<String> string2, boolean isSeperated) {
+		ArrayList<String> mergedList = new ArrayList<String>(stringOne);
+		if (isSeperated) {
+			mergedList.addAll(string2);
+		} else {
+			ArrayList<String> copiedString2 = new ArrayList<String>(string2);
+			String lastElementOfStringOne = mergedList.remove(mergedList.size() - 1);
+			String firstElementOfStringTwo = copiedString2.remove(0);
+		
+			mergedList.add(lastElementOfStringOne + firstElementOfStringTwo);
+			mergedList.addAll(copiedString2);
+		}
+		return mergedList;
+	}
 }

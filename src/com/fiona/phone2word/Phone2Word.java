@@ -7,10 +7,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.fiona.phone2word.util.FileReader;
+import com.fiona.phone2word.util.FoundCombinationCallback;
 import com.fiona.phone2word.util.LineReaderCallBack;
 import com.fiona.phone2word.util.StringProcesser;
 
-public class Phone2Word implements LineReaderCallBack {
+public class Phone2Word implements LineReaderCallBack, PhoneWordConvertCallback {
 	private static Logger log = Logger.getLogger(Phone2Word.class);
 	
 	private final static String COMMAND_LOAD_DICTIONARY = "-d";
@@ -23,7 +24,7 @@ public class Phone2Word implements LineReaderCallBack {
 	public Phone2Word() {
 		strProcessor = new StringProcesser();
 		ConvertPolicy policy = new NoTwoConsecutiveDigitsPolicy();
-		converter = new PhoneWordConverter(null, policy);
+		converter = new PhoneWordConverter(null, policy, this);
 	}
 
 	public void excute(String[] args) {
@@ -141,15 +142,12 @@ public class Phone2Word implements LineReaderCallBack {
 			return; //do nothing
 		}
 		
-		List<String> foundWords = converter.convert(strLine);
+		converter.convert(strLine);
 
-		if (foundWords == null || foundWords.size() == 0) {
+		if (converter.getHandledNumber() == 0) {
 			System.out.println("No Match for : " + strProcessor.processNumber(strLine));
 		} else {
-			System.out.println("Following words are found for  " + strProcessor.processNumber(strLine));
-			for (String word : foundWords) {
-				System.out.println("----" + word);
-			}
+			System.out.println(converter.getHandledNumber() + " words are found for  " + strProcessor.processNumber(strLine));
 		}
 	}
 
@@ -158,6 +156,11 @@ public class Phone2Word implements LineReaderCallBack {
 
 		Phone2Word phone2Word = new Phone2Word();
 		phone2Word.excute(args);
+	}
+
+	@Override
+	public void handleGeneratedWords(String words) {
+		System.out.println("----" + words);
 	}
 
 }
