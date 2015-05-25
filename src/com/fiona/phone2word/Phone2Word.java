@@ -22,7 +22,8 @@ public class Phone2Word implements LineReaderCallBack {
 	
 	public Phone2Word() {
 		strProcessor = new StringProcesser();
-		converter = new PhoneWordConverter(null);
+		ConvertPolicy policy = new NoTwoConsecutiveDigitsPolicy();
+		converter = new PhoneWordConverter(null, policy);
 	}
 
 	public void excute(String[] args) {

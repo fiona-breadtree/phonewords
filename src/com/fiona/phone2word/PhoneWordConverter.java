@@ -1,10 +1,13 @@
 package com.fiona.phone2word;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
 
+import com.fiona.phone2word.util.CartesianProduct;
 import com.fiona.phone2word.util.StringJointer;
 import com.fiona.phone2word.util.StringProcesser;
 import com.fiona.phone2word.util.SubStrCombinationFinder;
@@ -17,13 +20,15 @@ public class PhoneWordConverter {
 	public final static int MAX_LENGTH = 20;
 
 	private StringProcesser strProcessor = null;
+	private ConvertPolicy policy;
 	private StringJointer jointer = null;
 	private PhoneDictionary dictionary = null;
 	private int maxLength = 15;
 
-	public PhoneWordConverter(String dictionaryFileName) {
+	public PhoneWordConverter(String dictionaryFileName, ConvertPolicy policy) {
 		super();
 		dictionary = new PhoneDictionary(dictionaryFileName);
+		this.policy = policy;
 		strProcessor = new StringProcesser();
 		jointer = new StringJointer();
 	}
@@ -46,9 +51,9 @@ public class PhoneWordConverter {
 
 		// look up all words for combinations
 		for (List<String> combination : subStrCombinations) {
-			List<List<String>> word4OneCombination = dictionary.lookup(combination);
+			List<List<String>> word4OneCombination = combineLookupResults(combination);
 			for (List<String> words : word4OneCombination) {
-				if (!hasConsecutiveTwoNumbers(words)) {
+				if (policy.meetPolicy(jointer.join(words, NO_BOUNDARY))) {
 					// add results which don't have two consecutive numbers 
 					foundWordsCombinations.add(words);
 				}
@@ -62,12 +67,34 @@ public class PhoneWordConverter {
 		log.debug("End to covert phone number : " + phoneNumber);
 		return generatedWords;
 	}
+	
+	private List<List<String>> combineLookupResults(List<String> combination) {
+		List<List<String>> words4OneCombination = new ArrayList<List<String>>();
+		CartesianProduct carPro = new CartesianProduct();
 
-	private boolean hasConsecutiveTwoNumbers(List<String> inputWords) {
-		String printedString = jointer.join(inputWords, NO_BOUNDARY);
-		return strProcessor.hasConsecutiveDigits(printedString, 2);
+		for (String subStr : combination) {
+			List<String> matchedWords = null;
+			
+			SortedSet<String> foundedWords = dictionary.lookup(subStr);
+			if (foundedWords != null) {
+				matchedWords = new ArrayList<String>(foundedWords);
+			} else {
+				matchedWords = new ArrayList<String>();
+				matchedWords.add(subStr);
+			}
+	
+			if (words4OneCombination.size() == 0) {
+				for (String word : matchedWords) {
+					words4OneCombination.add(new ArrayList<String>(Arrays.asList(word)));
+				}
+			} else {
+				words4OneCombination = carPro.process(words4OneCombination, matchedWords);
+			}
+		}
+		
+		return words4OneCombination;
 	}
-
+	
 	public void loadDictionary(String dictionaryFileName) {
 		this.dictionary.loadDictionary(dictionaryFileName);
 	}

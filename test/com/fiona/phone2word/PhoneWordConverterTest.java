@@ -18,7 +18,7 @@ public class PhoneWordConverterTest {
 	@Before
 	public void setUp() throws Exception {
 		TestSuite.printTestCaseStart(currentTestCaseName);
-		generator = new PhoneWordConverter("config/testwords");
+		generator = new PhoneWordConverter("config/testwords",new NoTwoConsecutiveDigitsPolicy());
 	}
 
 	@After
