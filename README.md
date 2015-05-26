@@ -57,3 +57,6 @@ telephone exchanges serve a local area.
   (3) Look up from PhoneDictionary to find all matched words and then remove the results which have two consecutive numbers. 
 
   (4) Display all found words  with defined format for the phone number.
+
+### Changed in new_solution branch
+For a String with length n, all substrings combinations is 2 ^ (n-1), which means if an input string is too long, it will use much memory and may cause OutOfMemoryError. To avoid this, change the solution to split string with 10, then merge the and use callback to return words looked up for one combination one time.
