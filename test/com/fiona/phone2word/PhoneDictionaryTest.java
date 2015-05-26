@@ -43,14 +43,6 @@ public class PhoneDictionaryTest {
 		assertEquals(new TreeSet<String>(Arrays.asList("ME")), numberWordsMap.get("63"));
 	}
 	
-	@Test
-	public void testLookupFromDictionary() {
-		dictionary.loadDictionary("config/testwords");
-		assertEquals(Arrays.asList(Arrays.asList("2", "BALL", "ME"),
-				Arrays.asList("2", "CALL", "ME")),
-				dictionary.lookup(Arrays.asList("2", "2255", "63")));
-	}
-	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testWordsShortList() throws Exception, SecurityException {
@@ -58,8 +50,6 @@ public class PhoneDictionaryTest {
 		Method methodInstance = PhoneDictionary.class.getDeclaredMethod("initWordsInShortList", new Class[] {});
 		methodInstance.setAccessible(true);
 		methodInstance.invoke(dictionary,  new Object[] {});
-		assertEquals(Arrays.asList(Arrays.asList("ACE", "YOU")),
-				dictionary.lookup(Arrays.asList("223", "968")));
 		
 		Field instance = PhoneDictionary.class.getDeclaredField("numberWordsMap");
 		instance.setAccessible(true);

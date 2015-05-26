@@ -1,16 +1,13 @@
 package com.fiona.phone2word;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import com.fiona.phone2word.util.CartesianProduct;
 import com.fiona.phone2word.util.FileReader;
 import com.fiona.phone2word.util.LineReaderCallBack;
 import com.fiona.phone2word.util.StringProcesser;
@@ -136,30 +133,11 @@ public class PhoneDictionary implements LineReaderCallBack {
 		}
 	}
 
-	public List<List<String>> lookup(List<String> subset) {
-		List<List<String>> seperatedWords4OneSubset = new ArrayList<List<String>>();
-		for (String subStr : subset) {
-			List<String> matchedWords = null;
-			if (numberWordsMap.containsKey(subStr)) {
-				matchedWords = new ArrayList<String>(numberWordsMap.get(subStr));
-
-			} else {
-				matchedWords = new ArrayList<String>();
-				matchedWords.add(subStr);
-			}
-
-			if (seperatedWords4OneSubset.size() == 0) {
-				for (String word : matchedWords) {
-					seperatedWords4OneSubset.add(new ArrayList<String>(Arrays.asList(word)));
-				}
-			} else {
-				CartesianProduct carPro = new CartesianProduct();
-				seperatedWords4OneSubset = carPro.process(seperatedWords4OneSubset, matchedWords);
-			}
-		}
-		return seperatedWords4OneSubset;
+	public SortedSet<String> lookup(String numberStr) {
+		return numberWordsMap.get(numberStr);
 	}
-
+	
+		
 	private void initWordsInShortList() {
 		if (numberWordsMap != null) {
 			numberWordsMap.clear();
