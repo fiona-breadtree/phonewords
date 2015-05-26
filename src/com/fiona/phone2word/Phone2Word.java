@@ -1,13 +1,11 @@
 package com.fiona.phone2word;
 
-import java.util.List;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.fiona.phone2word.util.FileReader;
-import com.fiona.phone2word.util.FoundCombinationCallback;
 import com.fiona.phone2word.util.LineReaderCallBack;
 import com.fiona.phone2word.util.StringProcesser;
 
