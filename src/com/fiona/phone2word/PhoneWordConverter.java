@@ -26,7 +26,7 @@ public class PhoneWordConverter implements FoundCombinationCallback {
 	private StringJointer jointer = null;
 	private PhoneDictionary dictionary = null;
 	private long foundNumber = 0;
-	private int maxLength = 200;
+	private int maxLength = MAX_LENGTH;
 
 	public PhoneWordConverter(String dictionaryFileName, ConvertPolicy policy, PhoneWordConvertCallback callback) {
 		super();
@@ -98,8 +98,8 @@ public class PhoneWordConverter implements FoundCombinationCallback {
 	public void handle(List<String> combination) {
 		List<List<String>> word4OneCombination = combineLookupResults(combination);
 		for (List<String> words : word4OneCombination) {
-			if (policy.meetPolicy(jointer.join(words, NO_BOUNDARY))) {
-				System.out.println(jointer.join(words, WORD_BOUNDARY));
+			if (meetConvertPolicy(jointer.join(words, NO_BOUNDARY))) {
+				log.debug(jointer.join(words, WORD_BOUNDARY));
 				foundNumber++;
 				if (callback != null) {
 					callback.handleGeneratedWords(jointer.join(words, WORD_BOUNDARY));
@@ -108,6 +108,13 @@ public class PhoneWordConverter implements FoundCombinationCallback {
 		}
 	}
 
+	private boolean meetConvertPolicy(String word) {
+		if (policy == null) {
+			return true;
+		} else {
+			return policy.meetPolicy(word);
+		}
+	}
 	@Override
 	public long getHandledNumber() {
 		return foundNumber;
