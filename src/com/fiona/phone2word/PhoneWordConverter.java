@@ -22,23 +22,26 @@ public class PhoneWordConverter {
 	private StringProcesser strProcessor = null;
 	private StringJointer jointer = null;
 	private PhoneDictionary dictionary = null;
-	private int maxLength = 15;
+	private ConvertPolicy policy = null;
+	private int maxLength = MAX_LENGTH;
 
-	public PhoneWordConverter(String dictionaryFileName) {
+	public PhoneWordConverter(String dictionaryFileName, ConvertPolicy policy) {
 		super();
 		dictionary = new PhoneDictionary(dictionaryFileName);
+		this.policy = policy;
 		strProcessor = new StringProcesser();
 		jointer = new StringJointer();
 	}
 
 	public List<String> convert(String phoneNumber) {
-		if (phoneNumber.length() > maxLength) {
-			log.warn("Cannot support the phone number exceed max length " + maxLength);
+		//remove all punctuation and whitespace from phone number
+		String processedPhoneNumber = strProcessor.processNumber(phoneNumber);
+		
+		if (processedPhoneNumber.length() > maxLength) {
+			log.warn("Cannot support the phone number exceed max length " + maxLength + "dd" + processedPhoneNumber.length());
 			return null;
 		}
 		log.debug("Begin to covert phone number : " + phoneNumber);
-		//remove all punctuation and whitespace from phone number
-		String processedPhoneNumber = strProcessor.processNumber(phoneNumber);
 
 		List<String> generatedWords = new ArrayList<String>();
 		List<List<String>> foundWordsCombinations = new ArrayList<List<String>>();
@@ -51,7 +54,7 @@ public class PhoneWordConverter {
 		for (List<String> combination : subStrCombinations) {
 			List<List<String>> word4OneCombination = lookupWordsFromDictionary(combination);
 			for (List<String> words : word4OneCombination) {
-				if (!hasConsecutiveTwoNumbers(words)) {
+				if (meetConvertPolicy(words)) {
 					// add results which don't have two consecutive numbers 
 					foundWordsCombinations.add(words);
 				}
@@ -92,9 +95,12 @@ public class PhoneWordConverter {
 		return seperatedWords4OneSubset;
 	}
 	
-	private boolean hasConsecutiveTwoNumbers(List<String> inputWords) {
-		String printedString = jointer.join(inputWords, NO_BOUNDARY);
-		return strProcessor.hasConsecutiveDigits(printedString, 2);
+	private boolean meetConvertPolicy(List<String> inputWords) {
+		if (policy == null) {
+			return true;
+		} else {
+			return policy.meetPolicy(jointer.join(inputWords, NO_BOUNDARY));
+		}
 	}
 
 	public void loadDictionary(String dictionaryFileName) {

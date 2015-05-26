@@ -1,9 +1,7 @@
 package com.fiona.phone2word;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -20,7 +18,7 @@ public class PhoneWordConverterTest {
 	@Before
 	public void setUp() throws Exception {
 		TestSuite.printTestCaseStart(currentTestCaseName);
-		generator = new PhoneWordConverter("config/testwords");
+		generator = new PhoneWordConverter("config/testwords", new NoTwoConsecutiveDigitsPolicy());
 	}
 
 	@After

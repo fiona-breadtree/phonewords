@@ -115,6 +115,7 @@ public class PhoneDictionary implements LineReaderCallBack {
 
 		word = word.toUpperCase();
 
+		// For word with one char, only allow A and I.
 		if (word.length() == 1 && !(word.equals("A") || word.equals("I"))) {
 			return;
 		}
