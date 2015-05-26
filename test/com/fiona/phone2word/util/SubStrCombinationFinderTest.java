@@ -96,10 +96,9 @@ public class SubStrCombinationFinderTest {
 	
 	@Test
 	public void testFindCombinationsOneByOne() {
-		//finder.findCombinationsOneByOne("1234");
-		//finder.findCombinationsOneByOne("1234567890");
-		//finder.findCombinationsOneByOne("1234567890abc");
-		//System.out.println(callback.getHandledNumber());
+		finder.findCombinationsOneByOne("1234");
+		finder.findCombinationsOneByOne("1234567890");
+		finder.findCombinationsOneByOne("1234567890abc");
 		finder.findCombinationsOneByOne("1234567890abcdefghij12345");
 		System.out.println(callback.getHandledNumber());
 	}
